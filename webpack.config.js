@@ -2,7 +2,10 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  entry: './src/app.js',
+  entry: {
+    modeler: './src/modeler.js',
+    viewer: './src/viewer.js'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js'
@@ -10,8 +13,9 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.json$/,
-        loader: 'json-loader'
+        test: /\.js$/,
+        loader: ['babel-loader'],
+        exclude: /node_modules/
       }
     ]
   },
@@ -20,5 +24,8 @@ module.exports = {
     inline: true,
     watchContentBase: true,
     port: 8080
-  }
+  },
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin()
+  ]
 }

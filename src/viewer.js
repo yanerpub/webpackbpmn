@@ -1,25 +1,14 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>webpack-bpmn</title>
-    <style type="text/css">
-        html, body, #canvas, #canvas > div {
-            height: 100%;
-        }
-    </style>
-</head>
-<body>
-<!-- BPMN diagram container -->
-<div id="canvas"></div>
+'use strict';
+// we use fs + brfs to inline an example XML document.
+// exclude fs in package.json#browser + use the brfs transform
+// to generate a clean browserified bundle
+// require the viewer, make sure you added it to your project
+// dependencies via npm install --save-dev bpmn-js
+var BpmnViewer = require('bpmn-js');
 
-<!-- replace CDN url with local bpmn-js path -->
-<script src="https://cdn.rawgit.com/bpmn-io/bower-bpmn-js/v0.18.4/dist/bpmn-viewer.js"></script>
-<script>
-    // the diagram we are going to display
-    var bpmnXML = `<?xml version="1.0" standalone="yes"?>
+var viewer = new BpmnViewer({ container: '#canvas' });
+var xml = `
+<?xml version="1.0" standalone="yes"?>
 <semantic:definitions id="_1275940932088" targetNamespace="http://www.trisotech.com/definitions/_1275940932088" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL">
     <semantic:message id="_1275940932310"/>
     <semantic:message id="_1275940932433"/>
@@ -401,22 +390,36 @@
             </bpmndi:BPMNEdge>
         </bpmndi:BPMNPlane>
     </bpmndi:BPMNDiagram>
-</semantic:definitions>`;
+</semantic:definitions>
+`;
+viewer.importXML(xml, function(err) {
+  
+  if (!err) {
+    console.log('success!');
+    viewer.get('canvas').zoom('fit-viewport');
+  } else {
+    console.log('something went wrong:', err);
+  }
+});
 
-    // BpmnJS is the BPMN viewer instance
-    var viewer = new BpmnJS({ container: '#canvas' });
+var eventBus = viewer.get('eventBus');
 
-    // import a BPMN 2.0 diagram
-    viewer.importXML(bpmnXML, function(err) {
-        if (err) {
-            // import failed :-(
-        } else {
-            // we did well!
+// you may hook into any of the following events
+var events = [
+  'element.hover',
+  'element.out',
+  'element.click',
+  'element.dblclick',
+  'element.mousedown',
+  'element.mouseup'
+];
 
-            var canvas = viewer.get('canvas');
-            canvas.zoom('fit-viewport');
-        }
-    });
-</script>
-</body>
-</html>
+events.forEach(function(event) {
+  
+  eventBus.on(event, function(e) {
+    // e.element = the model element
+    // e.gfx = the graphical element
+  
+    console.log(event, 'on', e.element.id);
+  });
+});
