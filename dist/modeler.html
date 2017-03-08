@@ -18,8 +18,8 @@
   <li>
     <input type="hidden" id="id"/>
     name:<input type="text" id="name" style="width: 100px;"/>
-    <input id="save" type="button" onclick="save()" value="保存"/>
-    <input id="update" type="button" onclick="update()" value="更新"/>
+    <input id="save" type="button" onclick="save()" style="display:none" value="保存"/>
+    <input id="update" type="button" onclick="update()" style="display:none" value="更新"/>
   </li>
   <li>
     <a id="bpmn" href onclick="doSaveDiagram()">BPMN</a>
@@ -104,11 +104,14 @@
         error: function () {
           alert('保存失败');
         },
-        success: function (data) {
-          if (data.status == 0) {
+        success: function (body) {
+          if (body.status == 0) {
+            $('#id').val(body.data);
+            $('#save').hide();
+            $('#update').show();
             alert('保存成功');
           } else {
-            alert('保存失败' + data.message);
+            alert('保存失败' + body.message);
           }
         }
       });
@@ -119,7 +122,7 @@
     modeler.saveXML({format: true}, function (err, xml) {
       var tid = $.getUrlParam('tid')
       var obj = {
-        id: $.getUrlParam('id'),
+        id: $('#id').val(),
         name: $('#name').val(),
         bpmnXml: xml
       };
@@ -158,6 +161,8 @@
     var tid = $.getUrlParam('tid');
     var id = $.getUrlParam('id');
     if (!!tid && !id) {
+      $('#save').show();
+      $('#update').hide();
       // 新增逻辑
       var xml = `
       <?xml version="1.0" encoding="UTF-8"?>
@@ -182,6 +187,8 @@
         }
       });
     } else if (!!tid && !!id) {
+      $('#save').hide();
+      $('#update').show();
       // 修改逻辑
       $.ajax({
         type: "get",
