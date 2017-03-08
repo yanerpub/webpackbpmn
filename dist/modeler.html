@@ -45,7 +45,7 @@
   }
 
   function doSaveDiagram() {
-    modeler.saveXML({ format: true }, function(err, xml) {
+    modeler.saveXML({format: true}, function (err, xml) {
       setEncoded(document.getElementById('bpmn'), 'diagram.bpmn', err ? null : xml);
       console.log(err);
       console.log(xml)
@@ -70,14 +70,14 @@
     var selectedFile = document.getElementById("files").files[0];//获取读取的File对象
     var name = selectedFile.name;//读取选中文件的文件名
     var size = selectedFile.size;//读取选中文件的大小
-    console.log("文件名:"+name+"大小："+size);
+    console.log("文件名:" + name + "大小：" + size);
 
     var reader = new FileReader();//这里是核心！！！读取操作就是由它完成的。
     reader.readAsText(selectedFile);//读取文件的内容
 
-    reader.onload = function(){
+    reader.onload = function () {
       console.log(this.result);//当读取完成之后会回调这个函数，然后此时文件的内容存储到了result中。直接操作即可。
-      modeler.importXML(this.result, function(err) {
+      modeler.importXML(this.result, function (err) {
         if (err) {
           console.error(err);
         } else {
@@ -89,32 +89,34 @@
 
 
   function save() {
-    var tid = $.getUrlParam('tid')
-    var obj = {
-      name: $('#name').val(),
-      bpmnXml: xml
-    };
-    $.ajax({
-      type: "post",
-      url: '/tree/' + tid + '/workflow',
-      data: JSON.stringify(obj),
-      dataType: "json",
-      contentType: "application/json",
-      error: function () {
-        alert('保存失败');
-      },
-      success: function (data) {
-        if (data.status == 0) {
-          alert('保存成功');
-        } else {
-          alert('保存失败' + data.message);
+    modeler.saveXML({format: true}, function (err, xml) {
+      var tid = $.getUrlParam('tid')
+      var obj = {
+        name: $('#name').val(),
+        bpmnXml: xml
+      };
+      $.ajax({
+        type: "post",
+        url: '/tree/' + tid + '/workflow',
+        data: JSON.stringify(obj),
+        dataType: "json",
+        contentType: "application/json",
+        error: function () {
+          alert('保存失败');
+        },
+        success: function (data) {
+          if (data.status == 0) {
+            alert('保存成功');
+          } else {
+            alert('保存失败' + data.message);
+          }
         }
-      }
+      });
     });
   }
 
   function update() {
-    modeler.saveXML({ format: true }, function(err, xml) {
+    modeler.saveXML({format: true}, function (err, xml) {
       var tid = $.getUrlParam('tid')
       var obj = {
         id: $.getUrlParam('id'),
@@ -152,10 +154,9 @@
   })($);
 
 
-
   $(document).ready(function () {
     var tid = $.getUrlParam('tid');
-    var id =  $.getUrlParam('id');
+    var id = $.getUrlParam('id');
     if (!!tid && !id) {
       // 新增逻辑
       var xml = `
@@ -173,7 +174,7 @@
       </bpmndi:BPMNDiagram>
       </bpmn2:definitions>
       `;
-      modeler.importXML(xml, function(err) {
+      modeler.importXML(xml, function (err) {
         if (err) {
           console.error(err);
         } else {
@@ -194,7 +195,7 @@
           if (body.status == 0) {
             $('#name').val(body.data.name);
             $('#id').val(body.data.id);
-            modeler.importXML(body.data.bpmnXml, function(err) {
+            modeler.importXML(body.data.bpmnXml, function (err) {
               if (err) {
                 console.error(err);
               } else {
