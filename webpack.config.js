@@ -31,7 +31,10 @@ module.exports = {
     contentBase: path.join(__dirname, "dist"),
     inline: true,
     watchContentBase: true,
-    port: 8080
+    port: 8080,
+    proxy: {
+      "/tree": "http://localhost:8088"
+    }
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin()
