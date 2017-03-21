@@ -30,14 +30,13 @@
   })($);
 
   $(document).ready(function () {
-    var tid = $.getUrlParam('tid');
     var id = $.getUrlParam('id');
-    if (!tid || !id) {
+    if (!id) {
       alert('非法进入');
     }
     $.ajax({
       type: "get",
-      url: '/tree/' + tid + '/workflow/' + id,
+      url: '/workflow/' + id,
       dataType: "json",
       contentType: "application/json",
       error: function () {

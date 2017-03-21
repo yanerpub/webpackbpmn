@@ -90,14 +90,13 @@
 
   function save() {
     modeler.saveXML({format: true}, function (err, xml) {
-      var tid = $.getUrlParam('tid')
       var obj = {
         name: $('#name').val(),
         bpmnXml: xml
       };
       $.ajax({
         type: "post",
-        url: '/tree/' + tid + '/workflow',
+        url: '/workflow/',
         data: JSON.stringify(obj),
         dataType: "json",
         contentType: "application/json",
@@ -120,7 +119,6 @@
 
   function update() {
     modeler.saveXML({format: true}, function (err, xml) {
-      var tid = $.getUrlParam('tid')
       var obj = {
         id: $('#id').val(),
         name: $('#name').val(),
@@ -128,7 +126,7 @@
       };
       $.ajax({
         type: "put",
-        url: '/tree/' + tid + '/workflow',
+        url: '/workflow/',
         data: JSON.stringify(obj),
         dataType: "json",
         contentType: "application/json",
@@ -158,9 +156,8 @@
 
 
   $(document).ready(function () {
-    var tid = $.getUrlParam('tid');
     var id = $.getUrlParam('id');
-    if (!!tid && !id) {
+    if (!id) {
       $('#save').show();
       $('#update').hide();
       // 新增逻辑
@@ -186,13 +183,13 @@
           console.log('success!');
         }
       });
-    } else if (!!tid && !!id) {
+    } else if (!!id) {
       $('#save').hide();
       $('#update').show();
       // 修改逻辑
       $.ajax({
         type: "get",
-        url: '/tree/' + tid + '/workflow/' + id,
+        url: '/workflow/' + id,
         dataType: "json",
         contentType: "application/json",
         error: function () {

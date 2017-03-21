@@ -33,7 +33,7 @@ module.exports = {
     watchContentBase: true,
     port: 8080,
     proxy: {
-      "/tree": "http://localhost:8088"
+      "/workflow": "http://localhost:8088"
     }
   },
   plugins: [
